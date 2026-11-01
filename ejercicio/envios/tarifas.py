@@ -2,36 +2,27 @@
 # Nadie quiere tocarlo: cada cambio de tarifa toma días y rompe algo.
 
 
+def _tarifa_por_peso(base, por_kilo, por_kilo_extra, peso):
+    # Primer kilo a precio base, de 1 a 5 kilos un valor por kilo, y de ahí en adelante otro.
+    if peso <= 1:
+        return base
+    if peso <= 5:
+        return base + (peso - 1) * por_kilo
+    return base + 4 * por_kilo + (peso - 5) * por_kilo_extra
+
+
 def calcular_envio(pedido):
     total = 0
     if pedido["zona"] == "urbana":
-        if pedido["peso"] <= 1:
-            total = 8000
-        else:
-            if pedido["peso"] <= 5:
-                total = 8000 + (pedido["peso"] - 1) * 1500
-            else:
-                total = 8000 + 4 * 1500 + (pedido["peso"] - 5) * 2500
+        total = _tarifa_por_peso(8000, 1500, 2500, pedido["peso"])
         if pedido["express"]:
             total = total * 1.5
     elif pedido["zona"] == "regional":
-        if pedido["peso"] <= 1:
-            total = 12000
-        else:
-            if pedido["peso"] <= 5:
-                total = 12000 + (pedido["peso"] - 1) * 2000
-            else:
-                total = 12000 + 4 * 2000 + (pedido["peso"] - 5) * 3000
+        total = _tarifa_por_peso(12000, 2000, 3000, pedido["peso"])
         if pedido["express"]:
             total = total * 1.5
     elif pedido["zona"] == "nacional":
-        if pedido["peso"] <= 1:
-            total = 18000
-        else:
-            if pedido["peso"] <= 5:
-                total = 18000 + (pedido["peso"] - 1) * 2500
-            else:
-                total = 18000 + 4 * 2500 + (pedido["peso"] - 5) * 4000
+        total = _tarifa_por_peso(18000, 2500, 4000, pedido["peso"])
         if pedido["express"]:
             total = total * 1.8
     else:
