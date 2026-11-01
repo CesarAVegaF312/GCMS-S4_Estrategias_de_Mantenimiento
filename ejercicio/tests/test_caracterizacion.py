@@ -64,7 +64,7 @@ def test_factura_cliente_nuevo():
 
 
 def test_factura_cliente_frecuente_express():
-    # 21.000 menos 5 % es 19.950, que por el redondeo heredado queda en 20.000.
+    # 21.000 menos 5 % es 19.950, que redondeado a centenas queda en 20.000.
     assert factura(pedido("urbana", 5, True, "frecuente")) == (
         "Envío urbana express (cliente frecuente): $20.000\nIVA (19 %): $3.800\nTotal: $23.800"
     )
