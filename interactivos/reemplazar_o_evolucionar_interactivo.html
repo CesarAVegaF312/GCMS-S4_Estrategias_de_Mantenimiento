@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>¿Reemplazar o evolucionar? — GCMS Unidad 4</title>
+<style>
+:root{
+  --osc:#1C2B33; --txt:#31424B; --gris:#5E6E76; --claro:#EFF2F3; --linea:#CFDAE0; --crema:#F6EAE1;
+  --coral:#C2622C; --teal:#46707E; --cafe:#9E5C3B; --foco:#0B63CE;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:#F3F5F6;color:var(--txt);font-size:16px;line-height:1.5}
+:focus-visible{outline:3px solid var(--foco);outline-offset:2px}
+.header{background:var(--osc);color:#fff;padding:16px 28px}
+.header h1{font-size:20px;font-weight:700}
+.header p{font-size:13px;color:#9FB2BA;margin-top:2px}
+.header .encuadre{font-size:15px;color:#DCE6EA;margin-top:10px;max-width:1050px;border-left:4px solid var(--coral);padding-left:12px}
+.wrap{max-width:1100px;margin:22px auto 40px;padding:0 16px}
+.card{background:#fff;border-radius:12px;box-shadow:0 2px 14px rgba(28,43,51,.08);padding:22px 26px;margin-bottom:18px}
+.card h2{font-size:19px;color:var(--osc);margin-bottom:6px}
+.grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:22px;align-items:start}
+.pregunta{border-bottom:1px solid var(--linea);padding:10px 0}
+.pregunta p{font-size:15px;font-weight:600;color:var(--osc);margin-bottom:6px}
+.pregunta .op{display:flex;gap:6px;flex-wrap:wrap}
+.pregunta button{font:inherit;font-size:14px;padding:5px 12px;border-radius:16px;border:1px solid var(--linea);background:#fff;cursor:pointer;color:var(--osc)}
+.pregunta button[aria-pressed="true"]{background:var(--osc);color:#fff;border-color:var(--osc)}
+.estrategia{border-radius:10px;padding:12px 14px;margin-bottom:10px;border:2px solid transparent;background:var(--claro)}
+.estrategia b{display:block;font-size:16px;color:var(--osc)}
+.estrategia .barra{height:8px;background:#fff;border-radius:4px;margin:6px 0;overflow:hidden}
+.estrategia .barra i{display:block;height:100%;transition:width .3s}
+.estrategia span{font-size:13.5px;color:var(--gris)}
+.estrategia.gana{border-color:var(--coral);background:var(--crema)}
+.razones{font-size:14.5px;margin-top:8px}
+.razones li{margin:4px 0 4px 18px}
+.aviso{font-size:14px;background:#FBE9E6;color:#7A2A20;border-radius:8px;padding:10px 12px;margin-top:10px;display:none}
+.aviso.visible{display:block}
+.small{font-size:14px;color:var(--gris)}
+@media (max-width:860px){.grid{grid-template-columns:1fr}.header{padding:14px 16px}.card{padding:18px 16px}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>¿Reemplazar o evolucionar?</h1>
+  <p>Gestión de Configuración y Mantenimiento de Software · Unidad 4 · Formato F-23</p>
+  <div class="encuadre">Ocho preguntas sobre el sistema del grupo. Cada respuesta inclina la balanza hacia una de
+    tres estrategias, y el panel de la derecha muestra por qué. No es una calculadora: es una forma de ordenar la
+    discusión y de dejar escrita la justificación del F-23.</div>
+</div>
+<div class="wrap">
+  <div class="card">
+    <div class="grid">
+      <div id="preguntas"></div>
+      <div>
+        <h2>Hacia dónde se inclina</h2>
+        <div id="estrategias"></div>
+        <div class="aviso" id="aviso"></div>
+        <h2 style="margin-top:14px">Por qué</h2>
+        <ul class="razones" id="razones"><li>Responda las preguntas de la izquierda.</li></ul>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Las tres estrategias</h2>
+    <p class="small"><b>Refactorizar en el lugar:</b> mejorar la estructura sin cambiar el comportamiento, en pasos
+      pequeños protegidos por pruebas (Fowler, 2018). Es lo que muestra el ejercicio de la carpeta <code>ejercicio/</code>.<br/>
+      <b>Modernización incremental:</b> aislar los componentes frágiles detrás de interfaces y reemplazarlos uno a uno
+      mientras el sistema sigue operando, el patrón del higo estrangulador que describió Fowler (2004).<br/>
+      <b>Reemplazo completo:</b> construir un sistema nuevo y migrar. Tiene sentido cuando el sistema ya no puede
+      responder a lo que el negocio necesita, y exige sostener dos sistemas mientras dura la migración.</p>
+  </div>
+</div>
+<script>
+// Cada opción suma puntos a [refactorizar, incremental, reemplazo] y deja una razón.
+const PREGUNTAS = [
+  ["¿El sistema sostiene operaciones críticas hoy?", [
+    ["Sí", [2, 2, -1], "Sostiene operaciones críticas: un reemplazo completo arriesga la continuidad que la Unidad 4 debe asegurar."],
+    ["No", [0, 0, 1], "No es crítico: un reemplazo cuesta menos en riesgo operativo."]]],
+  ["¿Tiene pruebas automáticas, o se pueden escribir pruebas de caracterización?", [
+    ["Sí", [3, 1, 0], "Hay red de seguridad: se puede refactorizar en pasos pequeños sin miedo."],
+    ["No", [-2, 0, 0], "Sin pruebas, refactorizar es adivinar. El primer paso, en cualquier estrategia, es escribir pruebas de caracterización."]]],
+  ["¿La tecnología base sigue teniendo soporte?", [
+    ["Sí", [1, 0, -1], "La plataforma tiene soporte: no hay urgencia de salir de ella."],
+    ["Está por perderlo", [0, 2, 1], "La plataforma pierde soporte: hay que salir de ella, pero se puede hacer componente por componente."],
+    ["Ya no lo tiene", [-1, 2, 2], "La plataforma ya no tiene soporte: quedarse es un riesgo de seguridad y de continuidad."]]],
+  ["¿Alguien del equipo entiende el diseño actual?", [
+    ["Sí", [2, 1, 0], "El conocimiento está disponible: se puede mejorar lo existente con criterio."],
+    ["Solo en parte", [0, 1, 0], "El conocimiento es parcial: conviene documentar mientras se trabaja, componente por componente."],
+    ["No", [-1, 1, 1], "Nadie entiende el diseño: es la segunda causa del envejecimiento según Parnas (1994)."]]],
+  ["¿Las interfaces con otros sistemas están bien definidas?", [
+    ["Sí", [0, 2, 0], "Interfaces claras: se puede poner una fachada y reemplazar por detrás sin que los demás lo noten."],
+    ["No", [1, -1, 0], "Interfaces difusas: la modernización incremental exige primero definirlas."]]],
+  ["¿Los problemas están concentrados en pocos componentes?", [
+    ["Sí", [2, 2, -1], "Los problemas están localizados: se atacan donde están, sin tocar lo que funciona."],
+    ["Están en todas partes", [-1, 0, 2], "Los problemas están en todas partes: mejorar por partes puede no terminar nunca."]]],
+  ["¿Cambió de fondo lo que el negocio necesita del sistema?", [
+    ["No", [1, 1, -1], "El negocio necesita lo mismo: el problema es la estructura, no el propósito."],
+    ["Sí", [-1, 1, 3], "El negocio necesita otra cosa: refactorizar conserva un comportamiento que ya no sirve."]]],
+  ["¿Hay recursos para sostener dos sistemas en paralelo durante la transición?", [
+    ["Sí", [0, 1, 2], "Hay recursos para operar los dos sistemas mientras dura la transición."],
+    ["No", [1, 1, -3], "No hay recursos para dos sistemas: un reemplazo completo deja al negocio sin red mientras se construye."]]]
+];
+const ESTR = [["Refactorizar en el lugar", "var(--teal)"], ["Modernización incremental", "var(--cafe)"], ["Reemplazo completo", "var(--coral)"]];
+const resp = Array(PREGUNTAS.length).fill(null);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+document.getElementById("preguntas").innerHTML = PREGUNTAS.map(([p, ops], i) => `<div class="pregunta">
+  <p>${i + 1}. ${esc(p)}</p><div class="op" role="group" aria-label="${esc(p)}">${ops.map(([t], k) =>
+  `<button data-i="${i}" data-k="${k}" aria-pressed="false">${esc(t)}</button>`).join("")}</div></div>`).join("");
+document.querySelectorAll(".pregunta button").forEach(b => b.onclick = () => {
+  const i = +b.dataset.i;
+  resp[i] = +b.dataset.k;
+  document.querySelectorAll(`.pregunta button[data-i="${i}"]`).forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  pintar();
+});
+function pintar() {
+  const puntos = [0, 0, 0], razones = [];
+  resp.forEach((k, i) => {
+    if (k === null) return;
+    const [, pesos, razon] = PREGUNTAS[i][1][k];
+    pesos.forEach((p, e) => puntos[e] += p);
+    razones.push(razon);
+  });
+  const contestadas = resp.filter(x => x !== null).length;
+  const max = Math.max(...puntos), min = Math.min(...puntos, 0);
+  const gana = contestadas ? puntos.indexOf(max) : -1;
+  document.getElementById("estrategias").innerHTML = ESTR.map(([n, c], e) => `<div class="estrategia${e === gana ? " gana" : ""}">
+    <b>${n}</b><div class="barra"><i style="width:${contestadas ? Math.max(4, (puntos[e] - min) / ((max - min) || 1) * 100) : 0}%;background:${c}"></i></div>
+    <span>${contestadas ? puntos[e] + " puntos" : "—"}</span></div>`).join("");
+  document.getElementById("razones").innerHTML = razones.length ? razones.map(r => `<li>${esc(r)}</li>`).join("") : "<li>Responda las preguntas de la izquierda.</li>";
+  const aviso = document.getElementById("aviso");
+  aviso.classList.toggle("visible", resp[1] === 1);
+  aviso.textContent = "Sin pruebas, ninguna estrategia es segura. Antes de decidir, escriban pruebas de caracterización del comportamiento que el negocio necesita conservar.";
+}
+pintar();
+</script>
+</body>
+</html>
