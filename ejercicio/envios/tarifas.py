@@ -25,7 +25,8 @@ def _con_descuento(total, cliente):
 
 
 def redondear_centenas(valor):
-    # Conserva el redondeo heredado: round() lleva los .5 al par (8.450 queda en 8.400). Registrado como deuda.
+    # Conserva el redondeo heredado: round() lleva los .5 al par (8.450 queda en 8.400).
+    # No se corrige aquí porque cambiaría el comportamiento: está registrado como deuda.
     return round(valor / 100) * 100
 
 
@@ -39,13 +40,22 @@ def calcular_envio(pedido):
     return redondear_centenas(_con_descuento(total, pedido["cliente"]))
 
 
+def _pesos(valor):
+    # 47600 → "$47.600"
+    return "$" + f"{int(valor):,}".replace(",", ".")
+
+
+def _descripcion(pedido):
+    express = " express" if pedido["express"] else ""
+    frecuente = " (cliente frecuente)" if pedido["cliente"] == "frecuente" else ""
+    return f"Envío {pedido['zona']}{express}{frecuente}"
+
+
 def factura(pedido):
     total = calcular_envio(pedido)
-    if pedido["cliente"] == "frecuente":
-        linea = "Envío " + pedido["zona"] + (" express" if pedido["express"] else "") + " (cliente frecuente): $" + "{:,}".format(int(total)).replace(",", ".")
-    else:
-        linea = "Envío " + pedido["zona"] + (" express" if pedido["express"] else "") + ": $" + "{:,}".format(int(total)).replace(",", ".")
     iva = redondear_centenas(total * 0.19)
-    linea2 = "IVA (19 %): $" + "{:,}".format(int(iva)).replace(",", ".")
-    linea3 = "Total: $" + "{:,}".format(int(total + iva)).replace(",", ".")
-    return linea + "\n" + linea2 + "\n" + linea3
+    return "\n".join([
+        f"{_descripcion(pedido)}: {_pesos(total)}",
+        f"IVA (19 %): {_pesos(iva)}",
+        f"Total: {_pesos(total + iva)}",
+    ])
