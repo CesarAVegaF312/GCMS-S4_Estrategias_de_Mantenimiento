@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>GCMS S4 · Recorrido resuelto</title>
+<link rel="stylesheet" href="documentos.css"/>
+</head>
+<body>
+
+<div class="portada">
+  <div class="kicker">Gestión de Configuración y Mantenimiento de Software · Unidad 4</div>
+  <h1>Recorrido resuelto</h1>
+  <div class="sub">Los formatos F-22 a F-26 con el ejercicio de refactorización del curso y con Flask · Maestría en Ingeniería de Software, Universidad de La Sabana</div>
+</div>
+
+<p>Este recorrido usa dos casos reales. El primero es <b>el ejercicio de la carpeta <code>ejercicio/</code></b>: un
+módulo heredado de tarifas de envío, refactorizado en cuatro pasos. Cada paso es un commit del repositorio del curso y
+cada uno tiene su ejecución de la CI en verde. El segundo es <b>Flask</b>: su reestructuración de la versión 3.0.0,
+medida con la misma herramienta. Datos del 1 de noviembre de 2026.</p>
+
+<h2>Primera parte · El ejercicio</h2>
+
+<h3>F-22 · Oportunidades de mejora</h3>
+<table>
+  <thead><tr><th style="width:4%">#</th><th style="width:30%">Mejora</th><th style="width:28%">De dónde sale</th><th style="width:10%">Valor</th><th style="width:10%">Costo</th><th>Se hace</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>Que cambiar una tarifa sea cambiar un solo lugar</td><td>Deuda: el cálculo está copiado tres veces, una por zona</td><td>Alto</td><td>Bajo</td><td>Sí</td></tr>
+    <tr><td>2</td><td>Separar el formato de la factura del cálculo</td><td>Deuda: el formato de pesos está repetido</td><td>Medio</td><td>Bajo</td><td>Sí</td></tr>
+    <tr><td>3</td><td>Corregir el redondeo de los .5</td><td>Hallazgo de las pruebas de caracterización</td><td>Medio</td><td>Bajo</td><td>No: cambia el comportamiento. Queda como deuda, para un commit propio y una decisión del negocio</td></tr>
+  </tbody>
+</table>
+
+<h3>F-23 · Estrategia</h3>
+<p><b>Refactorizar en el lugar.</b> Los problemas están localizados en un solo archivo, el comportamiento se puede fijar
+con pruebas y el negocio necesita lo mismo de siempre. Reemplazar el módulo sería más riesgoso y no aportaría nada.</p>
+
+<h3>F-24 · Plan de refactorización</h3>
+<p><b>Pruebas de caracterización:</b> 24 casos en 7 funciones de prueba. Cubren tarifas por zona y peso, envío express,
+descuentos del cliente frecuente, redondeo, zona desconocida y factura. Al escribirlas apareció una rareza: un envío
+urbano de 1,3 kg cuesta 8.450 y el módulo lo cobra 8.400, no 8.500, porque <code>round()</code> de Python lleva los .5
+al número par. La prueba fija el comportamiento real y la rareza queda registrada.</p>
+<table>
+  <thead><tr><th style="width:5%">#</th><th style="width:40%">Paso</th><th style="width:12%">Commit</th><th style="width:20%">Ejecución de la CI</th><th>¿Cambia el comportamiento?</th></tr></thead>
+  <tbody>
+    <tr><td>—</td><td>Código heredado y pruebas de caracterización</td><td><code>5e6bf7c</code></td><td>41317571750 · verde</td><td>—</td></tr>
+    <tr><td>1</td><td>Extrae el cálculo por peso que se repetía en las tres zonas</td><td><code>06216a6</code></td><td>41317648643 · verde</td><td>No: 24 de 24</td></tr>
+    <tr><td>2</td><td>Reemplaza los condicionales por zona con una tabla de tarifas</td><td><code>8f1e225</code></td><td>41317704273 · verde</td><td>No: 24 de 24</td></tr>
+    <tr><td>3</td><td>Extrae el descuento por cliente y el redondeo a centenas</td><td><code>d51f577</code></td><td>41317765998 · verde</td><td>No: 24 de 24</td></tr>
+    <tr><td>4</td><td>Elimina la duplicación del formato de la factura</td><td><code>3f2ee8f</code></td><td>41317840174 · verde</td><td>No: 24 de 24</td></tr>
+  </tbody>
+</table>
+<p class="nota">La ejecución 41317571750 corresponde al commit siguiente al del código heredado, que solo sacó del
+repositorio unos archivos compilados de Python; el código es el mismo. La CI escribe el impacto de cada paso en el
+resumen de su ejecución.</p>
+
+<div class="salto"></div>
+<h3>F-25 y F-26 · Medición y evaluación del impacto</h3>
+<p><b>Objetivo declarado:</b> que cambiar una tarifa sea cambiar un solo lugar, y que el código sea más fácil de leer y
+de probar. <b>Métricas:</b> complejidad máxima, anidamiento, líneas duplicadas y tamaño de las funciones.</p>
+<pre>python herramientas/impacto.py . --antes 5e6bf7c --despues 3f2ee8f --ruta ejercicio/envios --pruebas ejercicio/tests</pre>
+<table>
+  <thead><tr><th style="width:30%">Métrica</th><th class="dato">Heredado</th><th class="dato">Paso 1</th><th class="dato">Paso 2</th><th class="dato">Paso 3</th><th class="dato">Paso 4</th></tr></thead>
+  <tbody>
+    <tr><td>Líneas de código</td><td class="dato">51</td><td class="dato">39</td><td class="dato">35</td><td class="dato">35</td><td class="dato">39</td></tr>
+    <tr><td>Funciones</td><td class="dato">2</td><td class="dato">3</td><td class="dato">3</td><td class="dato">5</td><td class="dato">7</td></tr>
+    <tr><td>Complejidad total</td><td class="dato">19</td><td class="dato">16</td><td class="dato">12</td><td class="dato">14</td><td class="dato">15</td></tr>
+    <tr><td>Complejidad máxima</td><td class="dato">15</td><td class="dato">9</td><td class="dato">5</td><td class="dato">4</td><td class="dato">3</td></tr>
+    <tr><td>Complejidad promedio</td><td class="dato">9,5</td><td class="dato">5,3</td><td class="dato">4,0</td><td class="dato">2,8</td><td class="dato">2,1</td></tr>
+    <tr><td>Anidamiento máximo</td><td class="dato">5</td><td class="dato">4</td><td class="dato">2</td><td class="dato">1</td><td class="dato">1</td></tr>
+    <tr><td>Líneas duplicadas</td><td class="dato">8</td><td class="dato">6</td><td class="dato">0</td><td class="dato">0</td><td class="dato">0</td></tr>
+    <tr><td>Funciones de más de 25 líneas</td><td class="dato">1</td><td class="dato">0</td><td class="dato">0</td><td class="dato">0</td><td class="dato">0</td></tr>
+  </tbody>
+</table>
+<table>
+  <tbody>
+    <tr><td class="campo">Qué mejoró</td><td>La función principal pasó de 41 líneas y complejidad 15 a 8 líneas y complejidad 3. No queda duplicación. Cambiar una tarifa es cambiar una fila de <code>TARIFAS</code>.</td></tr>
+    <tr><td class="campo">Qué no mejoró, y por qué</td><td>La complejidad total subió en los pasos 3 y 4 (de 12 a 15) y las líneas de código en el paso 4 (de 35 a 39): hay más funciones, cada una simple y con nombre. Por eso se miran varias métricas y se lee el objetivo, no una cifra.</td></tr>
+    <tr><td class="campo">El comportamiento</td><td>Se conservó: las 24 pruebas pasan en los cinco estados, en la CI.</td></tr>
+    <tr><td class="campo">Deuda que queda</td><td>El redondeo de los .5. Corregirlo es un cambio de comportamiento: se haría en un commit propio, con las pruebas actualizadas a propósito y una entrada en el registro de cambios.</td></tr>
+  </tbody>
+</table>
+
+<h2>Segunda parte · Flask 3.0</h2>
+<p>La versión 3.0.0 reorganizó las clases principales de Flask sobre bases sin entrada y salida (<i>Sans-IO</i>, PR 5127)
+y retiró código obsoleto. Medida con la misma herramienta sobre <code>src/flask</code>:</p>
+<pre>python herramientas/impacto.py flask --antes 2.3.3 --despues 3.0.0 --ruta src/flask --pruebas tests</pre>
+<table>
+  <thead><tr><th style="width:44%">Métrica</th><th class="dato">2.3.3</th><th class="dato">3.0.0</th></tr></thead>
+  <tbody>
+    <tr><td>Archivos</td><td class="dato">22</td><td class="dato">24</td></tr>
+    <tr><td>Líneas de código</td><td class="dato">6.402</td><td class="dato">6.460</td></tr>
+    <tr><td>Funciones</td><td class="dato">357</td><td class="dato">354</td></tr>
+    <tr><td>Complejidad máxima</td><td class="dato">30</td><td class="dato">23</td></tr>
+    <tr><td>Funciones con complejidad mayor que 10</td><td class="dato">10</td><td class="dato">10</td></tr>
+    <tr><td>Líneas duplicadas</td><td class="dato">477</td><td class="dato">775</td></tr>
+    <tr><td>Funciones de prueba</td><td class="dato">368</td><td class="dato">369</td></tr>
+  </tbody>
+</table>
+<p><b>Lectura.</b> La función más compleja, <code>register</code> de <code>blueprints.py</code>, bajó de 30 a 23. La
+duplicación subió porque <code>app.py</code> y el nuevo <code>sansio/app.py</code> comparten definiciones copiadas, como
+<code>_make_timedelta</code> y las variables de tipos: 90 de los 134 bloques repetidos nuevos están entre esos dos
+archivos. El objetivo de la reestructuración era separar el núcleo de la entrada y salida, no reducir estas métricas.
+Sin el objetivo declarado, la tabla diría que el código empeoró.</p>
+<p class="nota">El detalle por función está en <code>ejemplo_flask/impacto_funciones_2.3.3_a_3.0.0.csv</code>.</p>
+
+<h2>Lo que este recorrido enseña para su entrega</h2>
+<ol>
+  <li><b>Escriban las pruebas de caracterización antes de tocar el código.</b> En el ejercicio, una de ellas encontró
+  una rareza que nadie conocía.</li>
+  <li><b>Un commit por paso, con la CI en verde.</b> Si algo sale mal, se revierte un paso, no la semana.</li>
+  <li><b>Declaren el objetivo antes de medir.</b> Flask 3.0 muestra que las métricas genéricas pueden empeorar
+  mientras el diseño mejora en lo que se buscaba.</li>
+  <li><b>Separen refactorizar de cambiar el comportamiento.</b> La rareza del redondeo se registró, no se corrigió de
+  paso.</li>
+</ol>
+
+<h2>Referencias</h2>
+<p>Feathers, M. (2004). <i>Working effectively with legacy code</i>. Prentice Hall.</p>
+<p>Fowler, M. (2018). <i>Refactoring: Improving the design of existing code</i> (2.ª ed.). Addison-Wesley.</p>
+<p>Pallets. (2026). <i>Flask</i> [Repositorio de código fuente]. GitHub. https://github.com/pallets/flask</p>
+
+<div class="pie-doc">GCMS · Unidad 4 · Recorrido resuelto · César Augusto Vega Fernández · Universidad de La Sabana ·
+Licencia CC BY-NC-SA 4.0. Flask es un proyecto de Pallets con licencia BSD-3-Clause; este documento analiza su repositorio público.</div>
+</body>
+</html>

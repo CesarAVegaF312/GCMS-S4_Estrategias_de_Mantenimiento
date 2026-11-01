@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>GCMS S4 · Instrumentos F-22 a F-28</title>
+<link rel="stylesheet" href="documentos.css"/>
+</head>
+<body>
+
+<div class="portada">
+  <div class="kicker">Gestión de Configuración y Mantenimiento de Software · Unidad 4</div>
+  <h1>Instrumentos F-22 a F-28</h1>
+  <div class="sub">Estrategias de mantenimiento y evolución · Maestría en Ingeniería de Software, Universidad de La Sabana</div>
+</div>
+
+<p>Estos siete formatos preparan las actividades 4 y 5. Se llenan en grupo, sobre el mismo sistema de todo el curso.
+<b>No se suben a la plataforma</b>: son el borrador del documento, del README y de la presentación final.</p>
+
+<table>
+  <thead><tr><th>Formato</th><th>Qué prepara</th><th>Usa</th></tr></thead>
+  <tbody>
+    <tr><td><b>F-22</b> Oportunidades de mejora</td><td>Qué mejorar y por qué eso</td><td>F-05, F-06, F-20</td></tr>
+    <tr><td><b>F-23</b> Propuesta de estrategia</td><td>Refactorizar, modernizar por partes o reemplazar</td><td>F-22</td></tr>
+    <tr><td><b>F-24</b> Plan de refactorización</td><td>Pruebas de caracterización, pasos y commits</td><td>F-18 (pipeline)</td></tr>
+    <tr><td><b>F-25</b> Línea base de medición</td><td>Objetivo de cada mejora y su valor antes de empezar</td><td>F-10 (líneas base)</td></tr>
+    <tr><td><b>F-26</b> Evaluación del impacto</td><td>El antes y el después, y su lectura</td><td>F-25</td></tr>
+    <tr><td><b>F-27</b> Presentación final</td><td>Guion de la presentación, la demo y el resumen ejecutivo</td><td>Todo el curso</td></tr>
+    <tr><td><b>F-28</b> Verificación previa</td><td>Que todo esté y se pueda mostrar</td><td>—</td></tr>
+  </tbody>
+</table>
+
+<div class="recuadro crema">
+  <span class="rot">El orden importa</span>
+  <p>El F-25 se llena <b>antes</b> de tocar el código. Si el grupo empieza a mejorar sin haber medido, el antes ya no
+  existe y la evaluación del impacto se vuelve una opinión.</p>
+</div>
+
+<!-- ============================================================ F-22 -->
+<div class="salto"></div>
+<div class="formato-cab"><h2>Oportunidades de mejora</h2><span class="codigo">F-22</span></div>
+<table>
+  <thead><tr><th style="width:4%">#</th><th style="width:24%">Mejora</th><th style="width:20%">De dónde sale (deuda, riesgo, métrica)</th><th style="width:12%">Valor</th><th style="width:12%">Costo</th><th style="width:12%">Riesgo</th><th>Se hace</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td class="vacio alto"></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>2</td><td class="vacio alto"></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>3</td><td class="vacio alto"></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>4</td><td class="vacio alto"></td><td></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td>5</td><td class="vacio alto"></td><td></td><td></td><td></td><td></td><td></td></tr>
+  </tbody>
+</table>
+<p class="nota">Valor, costo y riesgo: alto, medio o bajo. Se eligen dos o tres que quepan en 20 horas. Las que no se
+hacen quedan registradas como deuda, con su razón.</p>
+
+<!-- ============================================================ F-23 -->
+<div class="formato-cab" style="margin-top:22pt"><h2>Propuesta de estrategia</h2><span class="codigo">F-23</span></div>
+<table>
+  <thead><tr><th style="width:22%">Mejora (del F-22)</th><th style="width:22%">Estrategia</th><th>Justificación</th></tr></thead>
+  <tbody>
+    <tr><td class="vacio alto"></td><td></td><td></td></tr>
+    <tr><td class="vacio alto"></td><td></td><td></td></tr>
+    <tr><td class="vacio alto"></td><td></td><td></td></tr>
+  </tbody>
+</table>
+<p class="nota">Estrategia: refactorizar en el lugar, modernización incremental o reemplazo. La justificación responde
+al menos: ¿hay pruebas?, ¿alguien entiende el diseño?, ¿los problemas están localizados?, ¿cambió lo que el negocio
+necesita?, ¿hay recursos para dos sistemas en paralelo?</p>
+
+<!-- ============================================================ F-24 -->
+<div class="salto"></div>
+<div class="formato-cab"><h2>Plan de refactorización</h2><span class="codigo">F-24</span></div>
+<h3>Pruebas de caracterización</h3>
+<table>
+  <thead><tr><th style="width:30%">Comportamiento que se fija</th><th style="width:30%">Prueba</th><th>Rarezas encontradas y qué se decidió</th></tr></thead>
+  <tbody>
+    <tr><td class="vacio"></td><td></td><td></td></tr>
+    <tr><td class="vacio"></td><td></td><td></td></tr>
+    <tr><td class="vacio"></td><td></td><td></td></tr>
+    <tr><td class="vacio"></td><td></td><td></td></tr>
+  </tbody>
+</table>
+<h3>Pasos</h3>
+<table>
+  <thead><tr><th style="width:5%">#</th><th style="width:30%">Paso (qué transformación)</th><th style="width:14%">Commit</th><th style="width:18%">Ejecución de la CI</th><th>¿Cambia el comportamiento?</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td class="vacio"></td><td></td><td></td><td></td></tr>
+    <tr><td>2</td><td class="vacio"></td><td></td><td></td><td></td></tr>
+    <tr><td>3</td><td class="vacio"></td><td></td><td></td><td></td></tr>
+    <tr><td>4</td><td class="vacio"></td><td></td><td></td><td></td></tr>
+    <tr><td>5</td><td class="vacio"></td><td></td><td></td><td></td></tr>
+  </tbody>
+</table>
+<p class="nota">Si la última columna dice «sí», ese paso no es una refactorización: va en su propio commit, con las
+pruebas actualizadas a propósito y una entrada en el registro de cambios.</p>
+
+<!-- ============================================================ F-25 -->
+<div class="salto"></div>
+<div class="formato-cab"><h2>Línea base de medición</h2><span class="codigo">F-25</span></div>
+<table>
+  <tbody>
+    <tr><td class="campo">Versión medida (etiqueta o commit)</td><td class="vacio"></td></tr>
+    <tr><td class="campo">Fecha de la medición</td><td class="vacio"></td></tr>
+    <tr><td class="campo">Herramientas y comandos exactos</td><td class="vacio alto"></td></tr>
+  </tbody>
+</table>
+<table>
+  <thead><tr><th style="width:22%">Mejora</th><th style="width:26%">Objetivo declarado</th><th style="width:24%">Métricas que lo muestran</th><th style="width:14%">Valor antes</th><th>Meta</th></tr></thead>
+  <tbody>
+    <tr><td class="vacio alto"></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="vacio alto"></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="vacio alto"></td><td></td><td></td><td></td><td></td></tr>
+  </tbody>
+</table>
+<div class="recuadro">
+  <span class="rot">Qué medir según el objetivo</span>
+  <ul>
+    <li>Que cambiar el código cueste menos: complejidad, duplicación, tamaño de las funciones, tiempo de un cambio típico.</li>
+    <li>Menos errores: defectos reportados, tasa de fallos de cambio, cumplimiento de un SLO.</li>
+    <li>Entregar más rápido: frecuencia de despliegue y tiempo de entrega (F-20).</li>
+    <li>Mejor rendimiento: latencia y consumo bajo una carga definida.</li>
+    <li>Salir de una plataforma sin soporte: componentes migrados, dependencias sin soporte que quedan.</li>
+  </ul>
+</div>
+
+<!-- ============================================================ F-26 -->
+<div class="salto"></div>
+<div class="formato-cab"><h2>Evaluación del impacto</h2><span class="codigo">F-26</span></div>
+<table>
+  <tbody>
+    <tr><td class="campo">Versión medida después (etiqueta o commit)</td><td class="vacio"></td></tr>
+  </tbody>
+</table>
+<table>
+  <thead><tr><th style="width:24%">Métrica</th><th style="width:12%">Antes</th><th style="width:12%">Después</th><th style="width:12%">Meta</th><th>Lectura: por qué cambió así</th></tr></thead>
+  <tbody>
+    <tr><td class="vacio"></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="vacio"></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="vacio"></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="vacio"></td><td></td><td></td><td></td><td></td></tr>
+    <tr><td class="vacio"></td><td></td><td></td><td></td><td></td></tr>
+  </tbody>
+</table>
+<table>
+  <tbody>
+    <tr><td class="campo">Qué mejoró, con evidencia</td><td class="vacio alto"></td></tr>
+    <tr><td class="campo">Qué no mejoró o empeoró, y por qué</td><td class="vacio alto"></td></tr>
+    <tr><td class="campo">Qué dicen las pruebas: ¿el comportamiento se conservó?</td><td class="vacio"></td></tr>
+    <tr><td class="campo">Deuda que queda y qué se recomienda hacer después</td><td class="vacio alto"></td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ F-27 -->
+<div class="salto"></div>
+<div class="formato-cab"><h2>Presentación final y resumen ejecutivo</h2><span class="codigo">F-27</span></div>
+<table>
+  <thead><tr><th style="width:18%">Parte</th><th style="width:12%">Diapositivas</th><th style="width:40%">Qué se dice</th><th>Evidencia que se muestra</th></tr></thead>
+  <tbody>
+    <tr><td>Problema</td><td>2 a 3</td><td class="vacio alto"></td><td></td></tr>
+    <tr><td>Solución</td><td>3 a 4</td><td class="vacio alto"></td><td></td></tr>
+    <tr><td>Implementación</td><td>3 a 4</td><td class="vacio alto"></td><td></td></tr>
+    <tr><td>Resultados</td><td>2 a 3</td><td class="vacio alto"></td><td></td></tr>
+  </tbody>
+</table>
+<table>
+  <tbody>
+    <tr><td class="campo">Guion de la demo: qué cambio entra, por dónde pasa, qué se ve en cada paso</td><td class="vacio alto"></td></tr>
+    <tr><td class="campo">Plan si la demo falla en vivo (ejecución grabada, capturas)</td><td class="vacio"></td></tr>
+    <tr><td class="campo">Quién presenta cada parte</td><td class="vacio"></td></tr>
+  </tbody>
+</table>
+<h3>Resumen ejecutivo (2 a 3 páginas)</h3>
+<ol>
+  <li>El sistema y el problema, en un párrafo.</li>
+  <li>Lo que se hizo en cada unidad, con un enlace a su evidencia.</li>
+  <li>Los resultados medidos.</li>
+  <li>Lo que queda pendiente y la recomendación.</li>
+</ol>
+
+<!-- ============================================================ F-28 -->
+<div class="salto"></div>
+<div class="formato-cab"><h2>Verificación previa a la entrega</h2><span class="codigo">F-28</span></div>
+<table>
+  <thead><tr><th style="width:76%">Verificación</th><th>Sí / No</th></tr></thead>
+  <tbody>
+    <tr><td>Cada mejora se rastrea hasta la deuda, los riesgos o las métricas de las unidades anteriores</td><td></td></tr>
+    <tr><td>La estrategia de cada mejora está justificada</td><td></td></tr>
+    <tr><td>El antes se midió antes de cambiar, en una versión identificada</td><td></td></tr>
+    <tr><td>Hay pruebas de caracterización del código que se tocó</td><td></td></tr>
+    <tr><td>Cada paso es un commit pequeño, integrado por PR con la CI en verde</td><td></td></tr>
+    <tr><td>Los cambios de comportamiento, si los hubo, están separados de las refactorizaciones</td><td></td></tr>
+    <tr><td>El después se midió con las mismas herramientas y comandos que el antes</td><td></td></tr>
+    <tr><td>La evaluación dice también lo que no mejoró</td><td></td></tr>
+    <tr><td>Hay una versión publicada con las mejoras (Unidad 3)</td><td></td></tr>
+    <tr><td>El documento tiene de 8 a 10 páginas, o es un README.md completo, y cita con norma APA 7</td><td></td></tr>
+    <tr><td>La presentación tiene de 10 a 15 diapositivas y la demo está ensayada</td><td></td></tr>
+    <tr><td>El resumen ejecutivo tiene de 2 a 3 páginas</td><td></td></tr>
+  </tbody>
+</table>
+
+<div class="pie-doc">GCMS · Unidad 4 · Instrumentos F-22 a F-28 · César Augusto Vega Fernández · Universidad de La Sabana ·
+Licencia CC BY-NC-SA 4.0</div>
+</body>
+</html>

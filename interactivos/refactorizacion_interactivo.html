@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Refactorización paso a paso — GCMS Unidad 4</title>
+<style>
+:root{
+  --osc:#1C2B33; --txt:#31424B; --gris:#5E6E76; --claro:#EFF2F3; --linea:#CFDAE0; --crema:#F6EAE1;
+  --coral:#C2622C; --teal:#46707E; --verde:#2F6B4C; --foco:#0B63CE;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,Arial,sans-serif;background:#F3F5F6;color:var(--txt);font-size:16px;line-height:1.5}
+:focus-visible{outline:3px solid var(--foco);outline-offset:2px}
+.header{background:var(--osc);color:#fff;padding:16px 28px}
+.header h1{font-size:20px;font-weight:700}
+.header p{font-size:13px;color:#9FB2BA;margin-top:2px}
+.header .encuadre{font-size:15px;color:#DCE6EA;margin-top:10px;max-width:1050px;border-left:4px solid var(--coral);padding-left:12px}
+.header code{background:rgba(255,255,255,.12);padding:0 4px;border-radius:3px}
+.wrap{max-width:1180px;margin:22px auto 40px;padding:0 16px}
+.card{background:#fff;border-radius:12px;box-shadow:0 2px 14px rgba(28,43,51,.08);padding:20px 24px;margin-bottom:18px}
+.pasos{display:flex;gap:6px;flex-wrap:wrap}
+.pasos button{font:inherit;font-size:14px;padding:7px 12px;border-radius:8px;border:1px solid var(--linea);background:#fff;cursor:pointer;color:var(--osc)}
+.pasos button[aria-pressed="true"]{background:var(--osc);color:#fff;border-color:var(--osc)}
+.cuerpo{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:18px;margin-top:14px}
+.cuerpo>div{min-width:0}
+pre{font-family:Consolas,'Courier New',monospace;font-size:12.5px;line-height:1.45;background:#14222A;color:#DCE6EA;border-radius:8px;padding:12px 14px;overflow:auto;max-height:620px}
+.meta{font-size:13.5px;color:var(--gris);margin-bottom:6px}
+.meta code{background:var(--claro);padding:0 4px;border-radius:3px;color:var(--osc)}
+h2{font-size:18px;color:var(--osc);margin-bottom:4px}
+.nota{background:var(--crema);border-radius:8px;padding:10px 14px;font-size:14.5px;margin:10px 0}
+.metrica{display:grid;grid-template-columns:150px 1fr 42px;gap:8px;align-items:center;font-size:13.5px;margin:6px 0}
+.metrica .barra{height:12px;background:var(--claro);border-radius:6px;overflow:hidden;position:relative}
+.metrica .barra i{display:block;height:100%;border-radius:6px;position:absolute;left:0;top:0;transition:width .35s}
+.metrica .barra i.ini{background:var(--linea)}
+.metrica .barra i.ahora{background:var(--coral);height:60%;top:20%}
+.metrica b{text-align:right;color:var(--osc)}
+.ci{display:inline-block;font-size:12.5px;font-weight:700;background:#E3F1E8;color:var(--verde);border-radius:10px;padding:2px 10px;margin-top:6px}
+.navegar{display:flex;gap:8px;margin-top:12px}
+.navegar button{font:inherit;font-size:14px;font-weight:700;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;background:var(--osc);color:#fff}
+.navegar button:disabled{opacity:.35;cursor:default}
+@media (max-width:860px){.cuerpo{grid-template-columns:minmax(0,1fr)}.header{padding:14px 16px}.card{padding:18px 16px}.metrica{grid-template-columns:120px 1fr 36px}}
+@media (prefers-reduced-motion:reduce){.metrica .barra i{transition:none}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Refactorización paso a paso</h1>
+  <p>Gestión de Configuración y Mantenimiento de Software · Unidad 4 · Formatos F-24 y F-26</p>
+  <div class="encuadre">El ejercicio de la carpeta <code>ejercicio/</code>: un módulo heredado de tarifas de envío
+    refactorizado en cuatro pasos pequeños. Cada paso es un commit del repositorio del curso, las 24 pruebas de
+    caracterización pasan en todos y cada uno tiene su ejecución de la CI en verde. Las métricas son las de
+    <code>herramientas/impacto.py</code>.</div>
+</div>
+<div class="wrap">
+  <div class="card">
+    <div class="pasos" id="pasos" role="group" aria-label="Paso"></div>
+    <div class="cuerpo">
+      <div><p class="meta" id="meta"></p><pre id="codigo" aria-label="Código de envios/tarifas.py"></pre></div>
+      <div>
+        <h2 id="titulo"></h2>
+        <span class="ci" id="ci"></span>
+        <p class="nota" id="nota"></p>
+        <div id="metricas"></div>
+        <p class="meta" style="margin-top:8px">La barra gris es el valor del código heredado; la naranja, el de este paso.</p>
+        <div class="navegar"><button id="ant">Paso anterior</button><button id="sig">Paso siguiente</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const PASOS = [{"commit": "5e6bf7c", "titulo": "Código heredado", "mensaje": "Agrega el módulo heredado de envíos con sus pruebas de caracterización", "ejecucion": "41317571750", "codigo": "# Módulo heredado del sistema de envíos. Funciona y está en producción.\n# Nadie quiere tocarlo: cada cambio de tarifa toma días y rompe algo.\n\n\ndef calcular_envio(pedido):\n    total = 0\n    if pedido[\"zona\"] == \"urbana\":\n        if pedido[\"peso\"] <= 1:\n            total = 8000\n        else:\n            if pedido[\"peso\"] <= 5:\n                total = 8000 + (pedido[\"peso\"] - 1) * 1500\n            else:\n                total = 8000 + 4 * 1500 + (pedido[\"peso\"] - 5) * 2500\n        if pedido[\"express\"]:\n            total = total * 1.5\n    elif pedido[\"zona\"] == \"regional\":\n        if pedido[\"peso\"] <= 1:\n            total = 12000\n        else:\n            if pedido[\"peso\"] <= 5:\n                total = 12000 + (pedido[\"peso\"] - 1) * 2000\n            else:\n                total = 12000 + 4 * 2000 + (pedido[\"peso\"] - 5) * 3000\n        if pedido[\"express\"]:\n            total = total * 1.5\n    elif pedido[\"zona\"] == \"nacional\":\n        if pedido[\"peso\"] <= 1:\n            total = 18000\n        else:\n            if pedido[\"peso\"] <= 5:\n                total = 18000 + (pedido[\"peso\"] - 1) * 2500\n            else:\n                total = 18000 + 4 * 2500 + (pedido[\"peso\"] - 5) * 4000\n        if pedido[\"express\"]:\n            total = total * 1.8\n    else:\n        raise ValueError(\"zona desconocida: \" + str(pedido[\"zona\"]))\n    if pedido[\"cliente\"] == \"frecuente\":\n        if total > 30000:\n            total = total - total * 0.1\n        else:\n            total = total - total * 0.05\n    total = round(total / 100) * 100\n    return total\n\n\ndef factura(pedido):\n    total = calcular_envio(pedido)\n    if pedido[\"cliente\"] == \"frecuente\":\n        linea = \"Envío \" + pedido[\"zona\"] + (\" express\" if pedido[\"express\"] else \"\") + \" (cliente frecuente): $\" + \"{:,}\".format(int(total)).replace(\",\", \".\")\n    else:\n        linea = \"Envío \" + pedido[\"zona\"] + (\" express\" if pedido[\"express\"] else \"\") + \": $\" + \"{:,}\".format(int(total)).replace(\",\", \".\")\n    iva = round(total * 0.19 / 100) * 100\n    linea2 = \"IVA (19 %): $\" + \"{:,}\".format(int(iva)).replace(\",\", \".\")\n    linea3 = \"Total: $\" + \"{:,}\".format(int(total + iva)).replace(\",\", \".\")\n    return linea + \"\\n\" + linea2 + \"\\n\" + linea3\n", "m": [51, 2, 19, 15, 9.5, 5, 8], "nota": "Una función de 41 líneas con tres bloques casi idénticos, uno por zona. Cambiar una tarifa exige tocar tres lugares sin equivocarse. Antes de mover nada se escribieron 24 pruebas de caracterización que fijan lo que hace hoy, incluida una rareza del redondeo."}, {"commit": "06216a6", "titulo": "Paso 1 · Extraer función", "mensaje": "Extrae el cálculo por peso que se repetía en las tres zonas", "ejecucion": "41317648643", "codigo": "# Módulo heredado del sistema de envíos. Funciona y está en producción.\n# Nadie quiere tocarlo: cada cambio de tarifa toma días y rompe algo.\n\n\ndef _tarifa_por_peso(base, por_kilo, por_kilo_extra, peso):\n    # Primer kilo a precio base, de 1 a 5 kilos un valor por kilo, y de ahí en adelante otro.\n    if peso <= 1:\n        return base\n    if peso <= 5:\n        return base + (peso - 1) * por_kilo\n    return base + 4 * por_kilo + (peso - 5) * por_kilo_extra\n\n\ndef calcular_envio(pedido):\n    total = 0\n    if pedido[\"zona\"] == \"urbana\":\n        total = _tarifa_por_peso(8000, 1500, 2500, pedido[\"peso\"])\n        if pedido[\"express\"]:\n            total = total * 1.5\n    elif pedido[\"zona\"] == \"regional\":\n        total = _tarifa_por_peso(12000, 2000, 3000, pedido[\"peso\"])\n        if pedido[\"express\"]:\n            total = total * 1.5\n    elif pedido[\"zona\"] == \"nacional\":\n        total = _tarifa_por_peso(18000, 2500, 4000, pedido[\"peso\"])\n        if pedido[\"express\"]:\n            total = total * 1.8\n    else:\n        raise ValueError(\"zona desconocida: \" + str(pedido[\"zona\"]))\n    if pedido[\"cliente\"] == \"frecuente\":\n        if total > 30000:\n            total = total - total * 0.1\n        else:\n            total = total - total * 0.05\n    total = round(total / 100) * 100\n    return total\n\n\ndef factura(pedido):\n    total = calcular_envio(pedido)\n    if pedido[\"cliente\"] == \"frecuente\":\n        linea = \"Envío \" + pedido[\"zona\"] + (\" express\" if pedido[\"express\"] else \"\") + \" (cliente frecuente): $\" + \"{:,}\".format(int(total)).replace(\",\", \".\")\n    else:\n        linea = \"Envío \" + pedido[\"zona\"] + (\" express\" if pedido[\"express\"] else \"\") + \": $\" + \"{:,}\".format(int(total)).replace(\",\", \".\")\n    iva = round(total * 0.19 / 100) * 100\n    linea2 = \"IVA (19 %): $\" + \"{:,}\".format(int(iva)).replace(\",\", \".\")\n    linea3 = \"Total: $\" + \"{:,}\".format(int(total + iva)).replace(\",\", \".\")\n    return linea + \"\\n\" + linea2 + \"\\n\" + linea3\n", "m": [39, 3, 16, 9, 5.3, 4, 6], "nota": "El cálculo por peso estaba copiado tres veces con distintos números. Ahora es una función que recibe esos números. La complejidad máxima baja de 15 a 9 y desaparece la función de más de 25 líneas."}, {"commit": "8f1e225", "titulo": "Paso 2 · Tabla en lugar de condicionales", "mensaje": "Reemplaza los condicionales por zona con una tabla de tarifas", "ejecucion": "41317704273", "codigo": "# Módulo de tarifas del sistema de envíos. Cambiar una tarifa es cambiar una fila de la tabla.\n\n# zona: (primer kilo, por kilo de 1 a 5, por kilo desde 5, factor express)\nTARIFAS = {\n    \"urbana\": (8000, 1500, 2500, 1.5),\n    \"regional\": (12000, 2000, 3000, 1.5),\n    \"nacional\": (18000, 2500, 4000, 1.8),\n}\n\n\ndef _tarifa_por_peso(base, por_kilo, por_kilo_extra, peso):\n    # Primer kilo a precio base, de 1 a 5 kilos un valor por kilo, y de ahí en adelante otro.\n    if peso <= 1:\n        return base\n    if peso <= 5:\n        return base + (peso - 1) * por_kilo\n    return base + 4 * por_kilo + (peso - 5) * por_kilo_extra\n\n\ndef calcular_envio(pedido):\n    if pedido[\"zona\"] not in TARIFAS:\n        raise ValueError(\"zona desconocida: \" + str(pedido[\"zona\"]))\n    base, por_kilo, por_kilo_extra, factor_express = TARIFAS[pedido[\"zona\"]]\n    total = _tarifa_por_peso(base, por_kilo, por_kilo_extra, pedido[\"peso\"])\n    if pedido[\"express\"]:\n        total = total * factor_express\n    if pedido[\"cliente\"] == \"frecuente\":\n        if total > 30000:\n            total = total - total * 0.1\n        else:\n            total = total - total * 0.05\n    total = round(total / 100) * 100\n    return total\n\n\ndef factura(pedido):\n    total = calcular_envio(pedido)\n    if pedido[\"cliente\"] == \"frecuente\":\n        linea = \"Envío \" + pedido[\"zona\"] + (\" express\" if pedido[\"express\"] else \"\") + \" (cliente frecuente): $\" + \"{:,}\".format(int(total)).replace(\",\", \".\")\n    else:\n        linea = \"Envío \" + pedido[\"zona\"] + (\" express\" if pedido[\"express\"] else \"\") + \": $\" + \"{:,}\".format(int(total)).replace(\",\", \".\")\n    iva = round(total * 0.19 / 100) * 100\n    linea2 = \"IVA (19 %): $\" + \"{:,}\".format(int(iva)).replace(\",\", \".\")\n    linea3 = \"Total: $\" + \"{:,}\".format(int(total + iva)).replace(\",\", \".\")\n    return linea + \"\\n\" + linea2 + \"\\n\" + linea3\n", "m": [35, 3, 12, 5, 4.0, 2, 0], "nota": "Las tres ramas por zona solo se diferenciaban en sus valores: ahora son filas de una tabla. Cambiar una tarifa es cambiar una fila. Desaparecen las líneas duplicadas y el anidamiento baja de 4 a 2."}, {"commit": "d51f577", "titulo": "Paso 3 · Extraer descuento y redondeo", "mensaje": "Extrae el descuento por cliente y el redondeo a centenas", "ejecucion": "41317765998", "codigo": "# Módulo de tarifas del sistema de envíos. Cambiar una tarifa es cambiar una fila de la tabla.\n\n# zona: (primer kilo, por kilo de 1 a 5, por kilo desde 5, factor express)\nTARIFAS = {\n    \"urbana\": (8000, 1500, 2500, 1.5),\n    \"regional\": (12000, 2000, 3000, 1.5),\n    \"nacional\": (18000, 2500, 4000, 1.8),\n}\n\n\ndef _tarifa_por_peso(base, por_kilo, por_kilo_extra, peso):\n    # Primer kilo a precio base, de 1 a 5 kilos un valor por kilo, y de ahí en adelante otro.\n    if peso <= 1:\n        return base\n    if peso <= 5:\n        return base + (peso - 1) * por_kilo\n    return base + 4 * por_kilo + (peso - 5) * por_kilo_extra\n\n\ndef _con_descuento(total, cliente):\n    # Clientes frecuentes: 10 % por encima de 30.000 y 5 % hasta 30.000.\n    if cliente != \"frecuente\":\n        return total\n    return total * (0.9 if total > 30000 else 0.95)\n\n\ndef redondear_centenas(valor):\n    # Conserva el redondeo heredado: round() lleva los .5 al par (8.450 queda en 8.400). Registrado como deuda.\n    return round(valor / 100) * 100\n\n\ndef calcular_envio(pedido):\n    if pedido[\"zona\"] not in TARIFAS:\n        raise ValueError(\"zona desconocida: \" + str(pedido[\"zona\"]))\n    base, por_kilo, por_kilo_extra, factor_express = TARIFAS[pedido[\"zona\"]]\n    total = _tarifa_por_peso(base, por_kilo, por_kilo_extra, pedido[\"peso\"])\n    if pedido[\"express\"]:\n        total = total * factor_express\n    return redondear_centenas(_con_descuento(total, pedido[\"cliente\"]))\n\n\ndef factura(pedido):\n    total = calcular_envio(pedido)\n    if pedido[\"cliente\"] == \"frecuente\":\n        linea = \"Envío \" + pedido[\"zona\"] + (\" express\" if pedido[\"express\"] else \"\") + \" (cliente frecuente): $\" + \"{:,}\".format(int(total)).replace(\",\", \".\")\n    else:\n        linea = \"Envío \" + pedido[\"zona\"] + (\" express\" if pedido[\"express\"] else \"\") + \": $\" + \"{:,}\".format(int(total)).replace(\",\", \".\")\n    iva = redondear_centenas(total * 0.19)\n    linea2 = \"IVA (19 %): $\" + \"{:,}\".format(int(iva)).replace(\",\", \".\")\n    linea3 = \"Total: $\" + \"{:,}\".format(int(total + iva)).replace(\",\", \".\")\n    return linea + \"\\n\" + linea2 + \"\\n\" + linea3\n", "m": [35, 5, 14, 4, 2.8, 1, 0], "nota": "El descuento y el redondeo pasan a funciones con nombre. La complejidad total sube de 12 a 14 porque hay dos funciones más, mientras la máxima y el promedio bajan: ninguna métrica sola cuenta la historia completa."}, {"commit": "3f2ee8f", "titulo": "Paso 4 · Eliminar duplicación", "mensaje": "Elimina la duplicación del formato de la factura", "ejecucion": "41317840174", "codigo": "# Módulo de tarifas del sistema de envíos. Cambiar una tarifa es cambiar una fila de la tabla.\n\n# zona: (primer kilo, por kilo de 1 a 5, por kilo desde 5, factor express)\nTARIFAS = {\n    \"urbana\": (8000, 1500, 2500, 1.5),\n    \"regional\": (12000, 2000, 3000, 1.5),\n    \"nacional\": (18000, 2500, 4000, 1.8),\n}\n\n\ndef _tarifa_por_peso(base, por_kilo, por_kilo_extra, peso):\n    # Primer kilo a precio base, de 1 a 5 kilos un valor por kilo, y de ahí en adelante otro.\n    if peso <= 1:\n        return base\n    if peso <= 5:\n        return base + (peso - 1) * por_kilo\n    return base + 4 * por_kilo + (peso - 5) * por_kilo_extra\n\n\ndef _con_descuento(total, cliente):\n    # Clientes frecuentes: 10 % por encima de 30.000 y 5 % hasta 30.000.\n    if cliente != \"frecuente\":\n        return total\n    return total * (0.9 if total > 30000 else 0.95)\n\n\ndef redondear_centenas(valor):\n    # Conserva el redondeo heredado: round() lleva los .5 al par (8.450 queda en 8.400).\n    # No se corrige aquí porque cambiaría el comportamiento: está registrado como deuda.\n    return round(valor / 100) * 100\n\n\ndef calcular_envio(pedido):\n    if pedido[\"zona\"] not in TARIFAS:\n        raise ValueError(\"zona desconocida: \" + str(pedido[\"zona\"]))\n    base, por_kilo, por_kilo_extra, factor_express = TARIFAS[pedido[\"zona\"]]\n    total = _tarifa_por_peso(base, por_kilo, por_kilo_extra, pedido[\"peso\"])\n    if pedido[\"express\"]:\n        total = total * factor_express\n    return redondear_centenas(_con_descuento(total, pedido[\"cliente\"]))\n\n\ndef _pesos(valor):\n    # 47600 → \"$47.600\"\n    return \"$\" + f\"{int(valor):,}\".replace(\",\", \".\")\n\n\ndef _descripcion(pedido):\n    express = \" express\" if pedido[\"express\"] else \"\"\n    frecuente = \" (cliente frecuente)\" if pedido[\"cliente\"] == \"frecuente\" else \"\"\n    return f\"Envío {pedido['zona']}{express}{frecuente}\"\n\n\ndef factura(pedido):\n    total = calcular_envio(pedido)\n    iva = redondear_centenas(total * 0.19)\n    return \"\\n\".join([\n        f\"{_descripcion(pedido)}: {_pesos(total)}\",\n        f\"IVA (19 %): {_pesos(iva)}\",\n        f\"Total: {_pesos(total + iva)}\",\n    ])\n", "m": [39, 7, 15, 3, 2.1, 1, 0], "nota": "La factura armaba tres veces el mismo formato de pesos y dos veces la misma descripción. Ahora hay una función para cada cosa. La complejidad máxima termina en 3, y las 24 pruebas pasan igual que el primer día."}];
+const NOMBRES = ["Líneas de código", "Funciones", "Complejidad total", "Complejidad máxima", "Complejidad promedio", "Anidamiento máximo", "Líneas duplicadas"];
+const $ = id => document.getElementById(id);
+let actual = 0;
+$("pasos").innerHTML = PASOS.map((p, i) => `<button data-i="${i}">${p.titulo}</button>`).join("");
+document.querySelectorAll("#pasos button").forEach(b => b.onclick = () => ver(+b.dataset.i));
+$("ant").onclick = () => ver(actual - 1);
+$("sig").onclick = () => ver(actual + 1);
+function ver(i) {
+  actual = i;
+  const p = PASOS[i], ini = PASOS[0].m;
+  document.querySelectorAll("#pasos button").forEach((b, k) => b.setAttribute("aria-pressed", String(k === i)));
+  $("titulo").textContent = p.titulo;
+  $("meta").innerHTML = `ejercicio/envios/tarifas.py en el commit <code>${p.commit}</code> · ${p.mensaje}`;
+  $("codigo").textContent = p.codigo;
+  $("ci").textContent = "CI en verde · ejecución " + p.ejecucion + " · 24 pruebas";
+  $("nota").textContent = p.nota;
+  const maximos = NOMBRES.map((_, k) => Math.max(...PASOS.map(x => x.m[k])));
+  $("metricas").innerHTML = NOMBRES.map((n, k) => `<div class="metrica"><span>${n}</span>
+      <div class="barra"><i class="ini" style="width:${ini[k] / maximos[k] * 100}%"></i>
+      <i class="ahora" style="width:${p.m[k] / maximos[k] * 100}%"></i></div><b>${p.m[k]}</b></div>`).join("");
+  $("ant").disabled = i === 0;
+  $("sig").disabled = i === PASOS.length - 1;
+}
+ver(0);
+</script>
+</body>
+</html>
