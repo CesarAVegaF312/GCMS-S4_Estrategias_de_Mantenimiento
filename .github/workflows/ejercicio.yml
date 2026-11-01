@@ -1,0 +1,49 @@
+# Red de seguridad del ejercicio de refactorización: en cada PR que toque el ejercicio corre las pruebas de
+# caracterización y mide el impacto del último commit contra el anterior.
+# Las acciones externas están fijadas por hash de commit (Unidad 2).
+name: Ejercicio de refactorización
+on:
+  pull_request:
+    paths: ["ejercicio/**", "herramientas/impacto.py", ".github/workflows/ejercicio.yml"]
+permissions:
+  contents: read
+concurrency:
+  group: ejercicio-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ejercicio
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - run: pip install pytest==9.2.0
+      - name: Pruebas de caracterización
+        run: pytest -q
+
+  impacto:
+    needs: pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+      - name: Impacto del último commit
+        run: |
+          {
+            echo "### Impacto de $(git log -1 --format='%h %s')"
+            echo '```'
+            python herramientas/impacto.py . --antes HEAD~1 --despues HEAD --ruta ejercicio/envios --pruebas ejercicio/tests --salida salida
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
