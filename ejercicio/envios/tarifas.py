@@ -1,5 +1,11 @@
-# Módulo heredado del sistema de envíos. Funciona y está en producción.
-# Nadie quiere tocarlo: cada cambio de tarifa toma días y rompe algo.
+# Módulo de tarifas del sistema de envíos. Cambiar una tarifa es cambiar una fila de la tabla.
+
+# zona: (primer kilo, por kilo de 1 a 5, por kilo desde 5, factor express)
+TARIFAS = {
+    "urbana": (8000, 1500, 2500, 1.5),
+    "regional": (12000, 2000, 3000, 1.5),
+    "nacional": (18000, 2500, 4000, 1.8),
+}
 
 
 def _tarifa_por_peso(base, por_kilo, por_kilo_extra, peso):
@@ -12,21 +18,12 @@ def _tarifa_por_peso(base, por_kilo, por_kilo_extra, peso):
 
 
 def calcular_envio(pedido):
-    total = 0
-    if pedido["zona"] == "urbana":
-        total = _tarifa_por_peso(8000, 1500, 2500, pedido["peso"])
-        if pedido["express"]:
-            total = total * 1.5
-    elif pedido["zona"] == "regional":
-        total = _tarifa_por_peso(12000, 2000, 3000, pedido["peso"])
-        if pedido["express"]:
-            total = total * 1.5
-    elif pedido["zona"] == "nacional":
-        total = _tarifa_por_peso(18000, 2500, 4000, pedido["peso"])
-        if pedido["express"]:
-            total = total * 1.8
-    else:
+    if pedido["zona"] not in TARIFAS:
         raise ValueError("zona desconocida: " + str(pedido["zona"]))
+    base, por_kilo, por_kilo_extra, factor_express = TARIFAS[pedido["zona"]]
+    total = _tarifa_por_peso(base, por_kilo, por_kilo_extra, pedido["peso"])
+    if pedido["express"]:
+        total = total * factor_express
     if pedido["cliente"] == "frecuente":
         if total > 30000:
             total = total - total * 0.1
