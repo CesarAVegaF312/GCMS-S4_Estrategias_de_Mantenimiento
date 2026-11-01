@@ -17,6 +17,18 @@ def _tarifa_por_peso(base, por_kilo, por_kilo_extra, peso):
     return base + 4 * por_kilo + (peso - 5) * por_kilo_extra
 
 
+def _con_descuento(total, cliente):
+    # Clientes frecuentes: 10 % por encima de 30.000 y 5 % hasta 30.000.
+    if cliente != "frecuente":
+        return total
+    return total * (0.9 if total > 30000 else 0.95)
+
+
+def redondear_centenas(valor):
+    # Conserva el redondeo heredado: round() lleva los .5 al par (8.450 queda en 8.400). Registrado como deuda.
+    return round(valor / 100) * 100
+
+
 def calcular_envio(pedido):
     if pedido["zona"] not in TARIFAS:
         raise ValueError("zona desconocida: " + str(pedido["zona"]))
@@ -24,13 +36,7 @@ def calcular_envio(pedido):
     total = _tarifa_por_peso(base, por_kilo, por_kilo_extra, pedido["peso"])
     if pedido["express"]:
         total = total * factor_express
-    if pedido["cliente"] == "frecuente":
-        if total > 30000:
-            total = total - total * 0.1
-        else:
-            total = total - total * 0.05
-    total = round(total / 100) * 100
-    return total
+    return redondear_centenas(_con_descuento(total, pedido["cliente"]))
 
 
 def factura(pedido):
@@ -39,7 +45,7 @@ def factura(pedido):
         linea = "Envío " + pedido["zona"] + (" express" if pedido["express"] else "") + " (cliente frecuente): $" + "{:,}".format(int(total)).replace(",", ".")
     else:
         linea = "Envío " + pedido["zona"] + (" express" if pedido["express"] else "") + ": $" + "{:,}".format(int(total)).replace(",", ".")
-    iva = round(total * 0.19 / 100) * 100
+    iva = redondear_centenas(total * 0.19)
     linea2 = "IVA (19 %): $" + "{:,}".format(int(iva)).replace(",", ".")
     linea3 = "Total: $" + "{:,}".format(int(total + iva)).replace(",", ".")
     return linea + "\n" + linea2 + "\n" + linea3
